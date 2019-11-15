@@ -16,5 +16,18 @@ namespace RLog.Outputs
                 logOutput.Write(logLevel, msg);
             }
         }
+
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            foreach (ILogOutput logOutput in _logOutputs)
+            {
+                if (logOutput.IsEnabled(logLevel))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

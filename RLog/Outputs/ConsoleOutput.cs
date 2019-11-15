@@ -16,5 +16,7 @@ namespace RLog.Outputs
                 Console.WriteLine(msg);
             }
         }
+
+        public bool IsEnabled(LogLevel logLevel) => logLevel >= _minLevel;
     }
 }

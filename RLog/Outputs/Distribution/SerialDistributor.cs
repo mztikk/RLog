@@ -1,20 +1,34 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
-namespace RLog
+namespace RLog.Outputs.Distribution
 {
-    public class LogRProvider : ILoggerProvider
+    public class SerialDistributor : ILogDistributor
     {
-        private readonly RLogConfigurator _logConfigurator;
+        private readonly IEnumerable<ILogOutput> _logOutputs;
 
-        public LogRProvider(RLogConfigurator logConfigurator) => _logConfigurator = logConfigurator;
+        public SerialDistributor(IEnumerable<ILogOutput> logOutputs) => _logOutputs = logOutputs;
 
-        private ConcurrentDictionary<string, Logger> Loggers { get; set; } = new ConcurrentDictionary<string, Logger>();
-
-        public ILogger CreateLogger(string categoryName)
+        public void Push(LogLevel logLevel, LogContext logContext, string msg)
         {
-            Logger customLogger = Loggers.GetOrAdd(categoryName, new Logger(LogContextProvider.Instance.CreateLogContext(categoryName), _logConfigurator.GetLogDistributor()));
-            return customLogger;
+            foreach (ILogOutput logOutput in _logOutputs)
+            {
+                logOutput.Write(logLevel, logContext, msg);
+            }
+        }
+
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            foreach (ILogOutput logOutput in _logOutputs)
+            {
+                if (logOutput.IsEnabled(logLevel))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         #region IDisposable Support
@@ -27,7 +41,13 @@ namespace RLog
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
-                    _logConfigurator?.GetLogDistributor()?.Dispose();
+                    foreach (ILogOutput output in _logOutputs)
+                    {
+                        if (output is IDisposable disposable)
+                        {
+                            disposable.Dispose();
+                        }
+                    }
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
@@ -38,7 +58,7 @@ namespace RLog
         }
 
         // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~LogRProvider()
+        // ~SerialDistributor()
         // {
         //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
         //   Dispose(false);

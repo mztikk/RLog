@@ -1,7 +1,6 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
-namespace RLog.Outputs
+namespace RLog.Outputs.Console
 {
     public class ConsoleOutput : ILogOutput
     {
@@ -9,11 +8,11 @@ namespace RLog.Outputs
 
         public ConsoleOutput(LogLevel minLevel) => _minLevel = minLevel;
 
-        public void Write(LogLevel logLevel, string msg)
+        public void Write(LogLevel logLevel, LogContext logContext, string msg)
         {
             if (logLevel >= _minLevel)
             {
-                Console.WriteLine(msg);
+                System.Console.WriteLine(msg);
             }
         }
 

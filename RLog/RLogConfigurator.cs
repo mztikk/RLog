@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using RLog.Outputs;
+using RLog.Outputs.Console;
+using RLog.Outputs.Distribution;
+using RLog.Outputs.File;
 
 namespace RLog
 {
@@ -23,6 +26,22 @@ namespace RLog
         }
 
         public RLogConfigurator AddConsoleOutput() => AddConsoleOutput(_logLevel);
+
+        public RLogConfigurator AddStaticFileOutput(LogLevel logLevel, string logPath)
+        {
+            _logOutputs.Add(new StaticFileOutput(logPath, logLevel));
+            return this;
+        }
+
+        public RLogConfigurator AddStaticFileOutput(string logPath) => AddStaticFileOutput(_logLevel, logPath);
+
+        public RLogConfigurator AddFileOutput(LogLevel logLevel, string logPath)
+        {
+            _logOutputs.Add(new FileOutput(logPath, logLevel));
+            return this;
+        }
+
+        public RLogConfigurator AddFileOutput(string logPath) => AddFileOutput(_logLevel, logPath);
 
         public ILogDistributor GetLogDistributor() => _logDistributor ?? new SerialDistributor(_logOutputs);
     }

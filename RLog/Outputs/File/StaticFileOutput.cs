@@ -1,21 +1,38 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.IO;
 using Microsoft.Extensions.Logging;
 
-namespace RLog
+namespace RLog.Outputs.File
 {
-    public class LogRProvider : ILoggerProvider
+    public class StaticFileOutput : ILogOutput, IDisposable
     {
-        private readonly RLogConfigurator _logConfigurator;
+        private readonly FileStream _fileStream;
+        private readonly StreamWriter _writer;
 
-        public LogRProvider(RLogConfigurator logConfigurator) => _logConfigurator = logConfigurator;
+        private readonly string _logPath;
+        private readonly LogLevel _minLevel;
 
-        private ConcurrentDictionary<string, Logger> Loggers { get; set; } = new ConcurrentDictionary<string, Logger>();
-
-        public ILogger CreateLogger(string categoryName)
+        public StaticFileOutput(string logPath, LogLevel minLevel)
         {
-            Logger customLogger = Loggers.GetOrAdd(categoryName, new Logger(LogContextProvider.Instance.CreateLogContext(categoryName), _logConfigurator.GetLogDistributor()));
-            return customLogger;
+            _logPath = logPath;
+            _minLevel = minLevel;
+
+            _fileStream = new FileStream(logPath, FileMode.Append, FileAccess.Write, FileShare.Read);
+            _writer = new StreamWriter(_fileStream)
+            {
+                AutoFlush = true
+            };
         }
+
+        public void Write(LogLevel logLevel, LogContext logContext, string msg)
+        {
+            if (logLevel >= _minLevel)
+            {
+                _writer.WriteLine(msg);
+            }
+        }
+
+        public bool IsEnabled(LogLevel logLevel) => logLevel >= _minLevel;
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
@@ -27,7 +44,8 @@ namespace RLog
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
-                    _logConfigurator?.GetLogDistributor()?.Dispose();
+                    _writer?.Dispose();
+                    _fileStream?.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
@@ -38,7 +56,7 @@ namespace RLog
         }
 
         // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~LogRProvider()
+        // ~StaticFileOutput()
         // {
         //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
         //   Dispose(false);

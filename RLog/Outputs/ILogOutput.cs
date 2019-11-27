@@ -6,6 +6,6 @@ namespace RLog.Outputs
     {
         bool IsEnabled(LogLevel logLevel);
 
-        void Write(LogLevel logLevel, string msg);
+        void Write(LogLevel logLevel, LogContext logContext, string msg);
     }
 }

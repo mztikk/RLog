@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using RLog.Outputs;
+using RLog.Outputs.Distribution;
 
 namespace RLog
 {
@@ -23,7 +23,7 @@ namespace RLog
         {
             string msg = formatter(state, exception);
             string context = _logContext.Format(msg);
-            _logDistributor.Push(logLevel, context);
+            _logDistributor.Push(logLevel, _logContext, context);
         }
 
         public static void AddParameterForContext<Context>(string parameterName, Func<string> parameterValue) => LogContextProvider.Instance.CreateLogContext(typeof(Context).ToString()).AddParameter(parameterName, parameterValue);

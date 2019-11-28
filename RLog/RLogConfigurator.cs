@@ -12,10 +12,17 @@ namespace RLog
         private LogLevel _logLevel = LogLevel.Information;
         private readonly ICollection<ILogOutput> _logOutputs = new List<ILogOutput>();
         private ILogDistributor _logDistributor = null;
+        private string _messageTemplate = Logger.DefaultTemplate;
 
         public RLogConfigurator SetLoglevel(LogLevel logLevel)
         {
             _logLevel = logLevel;
+            return this;
+        }
+
+        public RLogConfigurator SetMessageTemplate(string messageTemplate)
+        {
+            _messageTemplate = messageTemplate;
             return this;
         }
 
@@ -38,5 +45,7 @@ namespace RLog
         }
 
         public ILogDistributor GetLogDistributor() => _logDistributor ?? new SerialDistributor(_logOutputs);
+
+        public string GetMessageTemplate() => _messageTemplate;
     }
 }

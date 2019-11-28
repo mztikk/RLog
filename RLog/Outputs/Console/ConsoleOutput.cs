@@ -22,6 +22,11 @@ namespace RLog.Outputs.Console
                 {
                     string levelString = Logger.GetLogLevelString(logLevel);
                     int logLevelIndex = msg.IndexOf(levelString);
+                    if (logLevelIndex == -1)
+                    {
+                        PlainWrite(msg);
+                        return;
+                    }
                     string pre = msg.Substring(0, logLevelIndex);
                     int start = logLevelIndex + levelString.Length;
                     int end = msg.Length - start;
@@ -46,10 +51,12 @@ namespace RLog.Outputs.Console
                 }
                 else
                 {
-                    System.Console.WriteLine(msg);
+                    PlainWrite(msg);
                 }
             }
         }
+
+        private void PlainWrite(string msg) => System.Console.WriteLine(msg);
 
         public bool IsEnabled(LogLevel logLevel) => logLevel >= _minLevel;
 

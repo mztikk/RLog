@@ -28,6 +28,7 @@ namespace RLog
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
+            // set all parameters specific to a message
             _logParameters["LogLevel"] = () => GetLogLevelString(logLevel);
             _logParameters["LogEventID"] = () => eventId.ToString();
             _logParameters["LogMessage"] = () => formatter(state, exception);
@@ -42,6 +43,8 @@ namespace RLog
             {
                 _logParameters = new StringParameterizer();
             }
+
+            // set all parameters used throughout the logger
             _logParameters["LogContext"] = () => _logContext.Context;
         }
 

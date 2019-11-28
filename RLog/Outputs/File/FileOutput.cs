@@ -15,6 +15,7 @@ namespace RLog.Outputs.File
         public FileOutput(string logPath, LogLevel minLevel)
         {
             _logPath = logPath;
+            _file = logPath;
             _minLevel = minLevel;
         }
 
@@ -29,11 +30,10 @@ namespace RLog.Outputs.File
         private void WriteToFile(LogContext logContext, string msg)
         {
             string transformedPath = logContext.Format(_logPath);
-            if (_file is null || _file != transformedPath)
+            if (_file != transformedPath)
             {
                 _writer?.Dispose();
-                _writer = new StreamWriter(new FileStream(transformedPath, FileMode.Append, FileAccess.Write, FileShare.Read));
-                _file = transformedPath;
+                _writer = new StreamWriter(new FileStream(_file = transformedPath, FileMode.Append, FileAccess.Write, FileShare.Read));
             }
 
             _writer.WriteLine(msg);

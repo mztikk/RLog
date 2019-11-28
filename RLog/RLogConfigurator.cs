@@ -19,9 +19,9 @@ namespace RLog
             return this;
         }
 
-        public RLogConfigurator AddConsoleOutput(LogLevel logLevel) => AddOutput(new ConsoleOutput(logLevel));
+        public RLogConfigurator AddConsoleOutput(LogLevel logLevel, bool colorize) => AddOutput(new ConsoleOutput(logLevel, colorize));
 
-        public RLogConfigurator AddConsoleOutput() => AddConsoleOutput(_logLevel);
+        public RLogConfigurator AddConsoleOutput(bool colorize = true) => AddConsoleOutput(_logLevel, colorize);
 
         public RLogConfigurator AddStaticFileOutput(LogLevel logLevel, string logPath) => AddOutput(new StaticFileOutput(logPath, logLevel));
 

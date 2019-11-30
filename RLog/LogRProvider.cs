@@ -13,7 +13,7 @@ namespace RLog
 
         public ILogger CreateLogger(string categoryName)
         {
-            Logger customLogger = Loggers.GetOrAdd(categoryName, new Logger(LogContextProvider.Instance.CreateLogContext(categoryName), _logConfigurator.GetLogDistributor(), _logConfigurator.GetMessageTemplate()));
+            Logger customLogger = Loggers.GetOrAdd(categoryName, new Logger(_logConfigurator.GetGlobalContext(), LogContextProvider.Instance.CreateLogContext(categoryName), _logConfigurator.GetLogDistributor(), _logConfigurator.GetMessageTemplate()));
             return customLogger;
         }
 

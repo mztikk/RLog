@@ -8,16 +8,17 @@ namespace RLog.Outputs.File
     {
         private readonly FileStream _fileStream;
         private readonly StreamWriter _writer;
-
+        private readonly GlobalContext _globalContext;
         private readonly string _logPath;
         private readonly LogLevel _minLevel;
 
-        public StaticFileOutput(string logPath, LogLevel minLevel)
+        public StaticFileOutput(GlobalContext globalContext, string logPath, LogLevel minLevel)
         {
+            _globalContext = globalContext;
             _logPath = logPath;
             _minLevel = minLevel;
 
-            _fileStream = new FileStream(logPath, FileMode.Append, FileAccess.Write, FileShare.Read);
+            _fileStream = new FileStream(globalContext.Format(logPath), FileMode.Append, FileAccess.Write, FileShare.Read);
             _writer = new StreamWriter(_fileStream)
             {
                 AutoFlush = true

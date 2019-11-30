@@ -6,14 +6,16 @@ namespace RLog.Outputs.File
 {
     public class FileOutput : ILogOutput, IDisposable
     {
+        private readonly GlobalContext _globalContext;
         private readonly string _logPath;
         private readonly LogLevel _minLevel;
 
         private string _file;
         private StreamWriter _writer;
 
-        public FileOutput(string logPath, LogLevel minLevel)
+        public FileOutput(GlobalContext globalContext, string logPath, LogLevel minLevel)
         {
+            _globalContext = globalContext;
             _logPath = logPath;
             _file = logPath;
             _minLevel = minLevel;
@@ -29,7 +31,7 @@ namespace RLog.Outputs.File
 
         private void WriteToFile(LogContext logContext, string msg)
         {
-            string transformedPath = logContext.Format(_logPath);
+            string transformedPath = _globalContext.Format(logContext.Format(_logPath));
             if (_file != transformedPath)
             {
                 _writer?.Dispose();

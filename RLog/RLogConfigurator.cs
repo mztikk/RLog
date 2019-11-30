@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using RLog.Outputs;
 using RLog.Outputs.Console;
@@ -13,6 +14,7 @@ namespace RLog
         private readonly ICollection<ILogOutput> _logOutputs = new List<ILogOutput>();
         private ILogDistributor _logDistributor = null;
         private string _messageTemplate = Logger.DefaultTemplate;
+        private readonly GlobalContext _globalContext = new GlobalContext();
 
         public RLogConfigurator SetLoglevel(LogLevel logLevel)
         {
@@ -30,11 +32,11 @@ namespace RLog
 
         public RLogConfigurator AddConsoleOutput(bool colorize = true) => AddConsoleOutput(_logLevel, colorize);
 
-        public RLogConfigurator AddStaticFileOutput(LogLevel logLevel, string logPath) => AddOutput(new StaticFileOutput(logPath, logLevel));
+        public RLogConfigurator AddStaticFileOutput(LogLevel logLevel, string logPath) => AddOutput(new StaticFileOutput(_globalContext, logPath, logLevel));
 
         public RLogConfigurator AddStaticFileOutput(string logPath) => AddStaticFileOutput(_logLevel, logPath);
 
-        public RLogConfigurator AddFileOutput(LogLevel logLevel, string logPath) => AddOutput(new FileOutput(logPath, logLevel));
+        public RLogConfigurator AddFileOutput(LogLevel logLevel, string logPath) => AddOutput(new FileOutput(_globalContext, logPath, logLevel));
 
         public RLogConfigurator AddFileOutput(string logPath) => AddFileOutput(_logLevel, logPath);
 
@@ -44,8 +46,16 @@ namespace RLog
             return this;
         }
 
+        public RLogConfigurator WithParameter(string parameter, Func<string> parameterValue)
+        {
+            _globalContext.SetParameter(parameter, parameterValue);
+            return this;
+        }
+
         public ILogDistributor GetLogDistributor() => _logDistributor ?? new SerialDistributor(_logOutputs);
 
         public string GetMessageTemplate() => _messageTemplate;
+
+        public GlobalContext GetGlobalContext() => _globalContext;
     }
 }

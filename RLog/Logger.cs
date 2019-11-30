@@ -7,6 +7,7 @@ namespace RLog
 {
     public class Logger : ILogger
     {
+        private readonly GlobalContext _globalContext;
         private readonly LogContext _logContext;
 
         private readonly ILogDistributor _logDistributor;
@@ -15,8 +16,9 @@ namespace RLog
 
         public const string DefaultTemplate = "{LogLevel}: {LogContext}[{LogEventID}] {LogMessage}";
 
-        public Logger(LogContext logContext, ILogDistributor logDistributor, string messageTemplate)
+        public Logger(GlobalContext globalContext, LogContext logContext, ILogDistributor logDistributor, string messageTemplate)
         {
+            _globalContext = globalContext;
             _logContext = logContext;
             _logDistributor = logDistributor;
             _messageTemplate = messageTemplate;
@@ -34,7 +36,8 @@ namespace RLog
             _logParameters["LogMessage"] = () => formatter(state, exception);
 
             string context = _logContext.Format(_logParameters.Make(_messageTemplate));
-            _logDistributor.Push(logLevel, _logContext, context);
+            string msg = _globalContext.Format(context);
+            _logDistributor.Push(logLevel, _logContext, msg);
         }
 
         private void CreateLoggerParameters()

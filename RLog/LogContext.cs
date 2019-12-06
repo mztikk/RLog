@@ -21,5 +21,18 @@ namespace RLog
         public void SetParameter(string parameter, Func<string> parameterValue) => _parameterizer[parameter] = parameterValue;
 
         public string Format(string input) => _parameterizer.Make(input);
+
+        private string? TimestampFormatter(string parameter)
+        {
+            if (parameter.StartsWith($"{_parameterizer.OpenTag}Timestamp "))
+            {
+                string dateTimeFormat = parameter.Substring(10 + _parameterizer.OpenTag.Length, parameter.Length - 11 - _parameterizer.CloseTag.Length);
+                return DateTime.Now.ToString(dateTimeFormat);
+            }
+
+            return null;
+        }
+
+        //private void AddTimestampParameter() => _parameterizer[$"Timestamp {_parameterizer.WildcardString}"] = () => "";
     }
 }

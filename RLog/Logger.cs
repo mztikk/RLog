@@ -7,7 +7,7 @@ namespace RLog
 {
     public class Logger : ILogger
     {
-        private readonly GlobalContext _globalContext;
+        private readonly LogContext _globalContext;
         private readonly LogContext _logContext;
 
         private readonly ILogDistributor _logDistributor;
@@ -16,7 +16,7 @@ namespace RLog
 
         public const string DefaultTemplate = "{LogLevel}: {LogContext}[{LogEventID}] {LogMessage}";
 
-        public Logger(GlobalContext globalContext, LogContext logContext, ILogDistributor logDistributor, string messageTemplate)
+        public Logger(LogContext globalContext, LogContext logContext, ILogDistributor logDistributor, string messageTemplate)
         {
             _globalContext = globalContext;
             _logContext = logContext;

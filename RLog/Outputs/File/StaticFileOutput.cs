@@ -8,11 +8,11 @@ namespace RLog.Outputs.File
     {
         private readonly FileStream _fileStream;
         private readonly StreamWriter _writer;
-        private readonly GlobalContext _globalContext;
+        private readonly LogContext _globalContext;
         private readonly string _logPath;
         private readonly LogLevel _minLevel;
 
-        public StaticFileOutput(GlobalContext globalContext, string logPath, LogLevel minLevel)
+        public StaticFileOutput(LogContext globalContext, string logPath, LogLevel minLevel)
         {
             _globalContext = globalContext;
             _logPath = logPath;

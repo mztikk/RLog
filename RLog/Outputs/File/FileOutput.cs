@@ -6,14 +6,14 @@ namespace RLog.Outputs.File
 {
     public class FileOutput : ILogOutput, IDisposable
     {
-        private readonly GlobalContext _globalContext;
+        private readonly LogContext _globalContext;
         private readonly string _logPath;
         private readonly LogLevel _minLevel;
 
         private string _file;
         private StreamWriter _writer;
 
-        public FileOutput(GlobalContext globalContext, string logPath, LogLevel minLevel)
+        public FileOutput(LogContext globalContext, string logPath, LogLevel minLevel)
         {
             _globalContext = globalContext;
             _logPath = logPath;

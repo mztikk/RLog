@@ -31,14 +31,10 @@ namespace RLog.Outputs.File
 
         private void WriteToFile(LogContext? logContext, string msg)
         {
-            string path;
+            string path = _logPath;
             if (logContext is { })
             {
-                path = logContext.Format(_logPath);
-            }
-            else
-            {
-                path = string.Empty;
+                path = logContext.Format(path);
             }
 
             path = _globalContext.Format(path);

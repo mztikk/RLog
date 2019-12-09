@@ -6,7 +6,7 @@ namespace RLog
     {
         private LogContextProvider() { }
 
-        private static LogContextProvider s_instance;
+        private static LogContextProvider? s_instance;
 
         public static LogContextProvider Instance => s_instance ?? (s_instance = new LogContextProvider());
 

@@ -8,21 +8,21 @@ namespace RLog
     public class Logger : ILogger
     {
         private readonly LogContext _globalContext;
-        private readonly LogContext _logContext;
+        private readonly LogContext? _logContext;
 
         private readonly ILogDistributor _logDistributor;
         private readonly string _messageTemplate;
-        private StringParameterizer _logParameters;
+        private readonly StringParameterizer _logParameters;
 
         public const string DefaultTemplate = "{LogLevel}: {LogContext}[{LogEventID}] {LogMessage}";
 
-        public Logger(LogContext globalContext, LogContext logContext, ILogDistributor logDistributor, string messageTemplate)
+        public Logger(LogContext globalContext, LogContext? logContext, ILogDistributor logDistributor, string messageTemplate)
         {
             _globalContext = globalContext;
             _logContext = logContext;
             _logDistributor = logDistributor;
             _messageTemplate = messageTemplate;
-            CreateLoggerParameters();
+            _logParameters = CreateLoggerParameters();
         }
 
         public IDisposable BeginScope<TState>(TState state) => throw new NotImplementedException();
@@ -35,20 +35,26 @@ namespace RLog
             _logParameters["LogEventID"] = () => eventId.ToString();
             _logParameters["LogMessage"] = () => formatter(state, exception);
 
-            string context = _logContext.Format(_logParameters.Make(_messageTemplate));
-            string msg = _globalContext.Format(context);
+            string msg = _logParameters.Make(_messageTemplate);
+
+            if (_logContext is { })
+            {
+                msg = _logContext.Format(msg);
+            }
+
+            msg = _globalContext.Format(msg);
+
             _logDistributor.Push(logLevel, _logContext, msg);
         }
 
-        private void CreateLoggerParameters()
+        private StringParameterizer CreateLoggerParameters()
         {
-            if (_logParameters is null)
-            {
-                _logParameters = new StringParameterizer();
-            }
+            StringParameterizer rtn = new StringParameterizer();
 
             // set all parameters used throughout the logger
-            _logParameters["LogContext"] = () => _logContext.Context;
+            rtn["LogContext"] = () => _logContext is null ? string.Empty : _logContext.Context;
+
+            return rtn;
         }
 
         public static void AddParameterForContext<Context>(string parameterName, Func<string> parameterValue) => LogContextProvider.Instance.CreateLogContext(typeof(Context).ToString()).AddParameter(parameterName, parameterValue);

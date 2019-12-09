@@ -11,7 +11,7 @@ namespace RLog.Outputs.File
         private readonly LogLevel _minLevel;
 
         private string _file;
-        private StreamWriter _writer;
+        private StreamWriter? _writer;
 
         public FileOutput(LogContext globalContext, string logPath, LogLevel minLevel)
         {
@@ -21,7 +21,7 @@ namespace RLog.Outputs.File
             _minLevel = minLevel;
         }
 
-        public void Write(LogLevel logLevel, LogContext logContext, string msg)
+        public void Write(LogLevel logLevel, LogContext? logContext, string msg)
         {
             if (logLevel >= _minLevel)
             {
@@ -29,13 +29,24 @@ namespace RLog.Outputs.File
             }
         }
 
-        private void WriteToFile(LogContext logContext, string msg)
+        private void WriteToFile(LogContext? logContext, string msg)
         {
-            string transformedPath = _globalContext.Format(logContext.Format(_logPath));
-            if (_file != transformedPath)
+            string path;
+            if (logContext is { })
+            {
+                path = logContext.Format(_logPath);
+            }
+            else
+            {
+                path = string.Empty;
+            }
+
+            path = _globalContext.Format(path);
+
+            if (_file != path || _writer is null)
             {
                 _writer?.Dispose();
-                _writer = new StreamWriter(new FileStream(_file = transformedPath, FileMode.Append, FileAccess.Write, FileShare.Read));
+                _writer = new StreamWriter(new FileStream(_file = path, FileMode.Append, FileAccess.Write, FileShare.Read));
             }
 
             _writer.WriteLine(msg);
@@ -44,11 +55,11 @@ namespace RLog.Outputs.File
         public bool IsEnabled(LogLevel logLevel) => logLevel >= _minLevel;
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool _disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
@@ -59,7 +70,7 @@ namespace RLog.Outputs.File
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

@@ -9,7 +9,7 @@ namespace RLog
 
         public LogRProvider(RLogConfigurator logConfigurator) => _logConfigurator = logConfigurator;
 
-        private ConcurrentDictionary<string, Logger> Loggers { get; set; } = new ConcurrentDictionary<string, Logger>();
+        private ConcurrentDictionary<string, Logger> Loggers { get; } = new ConcurrentDictionary<string, Logger>();
 
         public ILogger CreateLogger(string categoryName)
         {
@@ -18,11 +18,11 @@ namespace RLog
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool _disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
@@ -33,7 +33,7 @@ namespace RLog
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

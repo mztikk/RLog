@@ -25,7 +25,7 @@ namespace RLog.Outputs.File
             };
         }
 
-        public void Write(LogLevel logLevel, LogContext logContext, string msg)
+        public void Write(LogLevel logLevel, LogContext? logContext, string msg)
         {
             if (logLevel >= _minLevel)
             {

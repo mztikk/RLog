@@ -10,7 +10,7 @@ namespace RLog.Outputs.Distribution
 
         public SerialDistributor(IEnumerable<ILogOutput> logOutputs) => _logOutputs = logOutputs;
 
-        public void Push(LogLevel logLevel, LogContext logContext, string msg)
+        public void Push(LogLevel logLevel, LogContext? logContext, string msg)
         {
             foreach (ILogOutput logOutput in _logOutputs)
             {
@@ -32,11 +32,11 @@ namespace RLog.Outputs.Distribution
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
+        private bool _disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
@@ -53,7 +53,7 @@ namespace RLog.Outputs.Distribution
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

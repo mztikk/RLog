@@ -13,7 +13,7 @@ namespace RLog
     {
         private LogLevel _logLevel = LogLevel.Information;
         private readonly ICollection<ILogOutput> _logOutputs = new List<ILogOutput>();
-        private ILogDistributor _logDistributor = null;
+        private ILogDistributor? _logDistributor = null;
         private string _messageTemplate = Logger.DefaultTemplate;
         private readonly LogContext _globalContext = new LogContext(new CryptoRandom().Next().ToString());
 

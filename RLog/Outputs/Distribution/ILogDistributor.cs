@@ -7,6 +7,6 @@ namespace RLog.Outputs.Distribution
     {
         bool IsEnabled(LogLevel logLevel);
 
-        void Push(LogLevel logLevel, LogContext logContext, string msg);
+        void Push(LogLevel logLevel, LogContext? logContext, string msg);
     }
 }

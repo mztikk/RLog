@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 
 namespace RLog
@@ -14,6 +15,12 @@ namespace RLog
         public ILogger CreateLogger(string categoryName)
         {
             Logger customLogger = Loggers.GetOrAdd(categoryName, new Logger(_logConfigurator.GetGlobalContext(), LogContextProvider.Instance.CreateLogContext(categoryName), _logConfigurator.GetLogDistributor(), _logConfigurator.GetMessageTemplate()));
+            return customLogger;
+        }
+
+        public ILogger CreateLogger()
+        {
+            Logger customLogger = Loggers.GetOrAdd(Guid.NewGuid().ToString(), new Logger(_logConfigurator.GetGlobalContext(), null, _logConfigurator.GetLogDistributor(), _logConfigurator.GetMessageTemplate()));
             return customLogger;
         }
 

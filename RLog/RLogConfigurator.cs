@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using RFReborn.Random;
 using RLog.Outputs;
 using RLog.Outputs.Console;
 using RLog.Outputs.Distribution;
@@ -13,9 +12,9 @@ namespace RLog
     {
         private LogLevel _logLevel = LogLevel.Information;
         private readonly ICollection<ILogOutput> _logOutputs = new List<ILogOutput>();
-        private ILogDistributor? _logDistributor = null;
+        private ILogDistributor? _logDistributor;
         private string _messageTemplate = Logger.DefaultTemplate;
-        private readonly LogContext _globalContext = new LogContext(new CryptoRandom().Next().ToString());
+        private readonly LogContext _globalContext = new LogContext(Guid.NewGuid().ToString());
 
         public RLogConfigurator SetLoglevel(LogLevel logLevel)
         {

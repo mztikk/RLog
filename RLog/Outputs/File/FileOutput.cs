@@ -42,7 +42,7 @@ namespace RLog.Outputs.File
             if (_file != path || _writer is null)
             {
                 _writer?.Dispose();
-                _writer = new StreamWriter(new FileStream(_file = path, FileMode.Append, FileAccess.Write, FileShare.Read));
+                _writer = new StreamWriter(new FileStream(_file = path, FileMode.Append, FileAccess.Write, FileShare.Read)) { AutoFlush = true };
             }
 
             _writer.WriteLine(msg);

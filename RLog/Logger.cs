@@ -14,7 +14,8 @@ namespace RLog
         private readonly string _messageTemplate;
         private readonly StringParameterizer _logParameters;
 
-        public const string DefaultTemplate = "{LogLevel}: {LogContext}[{LogEventID}] {LogMessage}";
+        // 5 spaces after new line for log level string indentation (eg. info: )
+        public static readonly string s_defaultTemplate = "{LogLevel}: {LogContext}[{LogEventID}]" + Environment.NewLine + "      {LogMessage}";
 
         public Logger(LogContext globalContext, LogContext? logContext, ILogDistributor logDistributor, string messageTemplate)
         {

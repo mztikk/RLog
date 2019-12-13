@@ -14,13 +14,15 @@ namespace RLog
             Context = context;
 
             _parameterizer = new StringParameterizer();
+
+            AddTimestampParameter();
         }
 
         public bool TryAddParameter(string parameter, Func<string> parameterValue) => _parameterizer.TryAdd(parameter, parameterValue);
         public void AddParameter(string parameter, Func<string> parameterValue) => _parameterizer.Add(parameter, parameterValue);
         public void SetParameter(string parameter, Func<string> parameterValue) => _parameterizer[parameter] = parameterValue;
 
-        public string Format(string input) => _parameterizer.Make(input);
+        public string Format(string input) => _parameterizer.Make(input, TimestampFormatter);
 
         private string? TimestampFormatter(string parameter)
         {
@@ -33,6 +35,6 @@ namespace RLog
             return null;
         }
 
-        //private void AddTimestampParameter() => _parameterizer[$"Timestamp {_parameterizer.WildcardString}"] = () => "";
+        private void AddTimestampParameter() => _parameterizer[$"Timestamp {_parameterizer.WildcardString}"] = () => "";
     }
 }

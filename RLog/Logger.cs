@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using RFReborn;
 using RLog.Outputs.Distribution;
@@ -26,15 +28,47 @@ namespace RLog
             _logParameters = CreateLoggerParameters();
         }
 
-        public IDisposable BeginScope<TState>(TState state) => throw new NotImplementedException();
+        private readonly List<object> _scopeStates = new List<object>();
+
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            Action action;
+            if (state is { })
+            {
+                _scopeStates.Add(state);
+
+                action = () => _scopeStates.Remove(state);
+            }
+            else
+            {
+                action = () => { };
+            }
+
+            return new DisposableAction(action);
+        }
+
         public bool IsEnabled(LogLevel logLevel) => _logDistributor.IsEnabled(logLevel);
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
+            StringBuilder sb = new StringBuilder();
+            foreach (object scope in _scopeStates)
+            {
+                if (scope.GetType() == typeof(TState))
+                {
+                    sb.Append(formatter((TState)scope, exception));
+                }
+                else
+                {
+                    sb.Append(scope.ToString());
+                }
+            }
+            sb.Append(formatter(state, exception));
+
             // set all parameters specific to a message
             _logParameters["LogLevel"] = () => GetLogLevelString(logLevel);
             _logParameters["LogEventID"] = () => eventId.ToString();
-            _logParameters["LogMessage"] = () => formatter(state, exception);
+            _logParameters["LogMessage"] = () => sb.ToString();
 
             string msg = _logParameters.Make(_messageTemplate);
 

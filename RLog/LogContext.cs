@@ -26,9 +26,9 @@ namespace RLog
 
         private string? TimestampFormatter(string parameter)
         {
-            if (parameter.StartsWith($"{_parameterizer.OpenTag}Timestamp "))
+            if (parameter.StartsWith("Timestamp "))
             {
-                string dateTimeFormat = parameter.Substring(10 + _parameterizer.OpenTag.Length, parameter.Length - 11 - _parameterizer.CloseTag.Length);
+                string dateTimeFormat = parameter.Substring(10, parameter.Length - 10);
                 return DateTime.Now.ToString(dateTimeFormat);
             }
 

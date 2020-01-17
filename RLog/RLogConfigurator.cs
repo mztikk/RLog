@@ -12,9 +12,11 @@ namespace RLog
     {
         private LogLevel _logLevel = LogLevel.Information;
         private readonly ICollection<ILogOutput> _logOutputs = new List<ILogOutput>();
-        private ILogDistributor? _logDistributor;
+        private ILogDistributor _logDistributor;
         private string _messageTemplate = Logger.s_defaultTemplate;
         private readonly LogContext _globalContext = new LogContext(Guid.NewGuid().ToString());
+
+        public RLogConfigurator() => _logDistributor = new QueueDistributor(_logOutputs);
 
         public RLogConfigurator SetLoglevel(LogLevel logLevel)
         {
@@ -52,7 +54,13 @@ namespace RLog
             return this;
         }
 
-        public ILogDistributor GetLogDistributor() => _logDistributor ?? new SerialDistributor(_logOutputs);
+        public ILogDistributor GetLogDistributor() => _logDistributor;
+
+        public RLogConfigurator SetLogDistributor(ILogDistributor logDistributor)
+        {
+            _logDistributor = logDistributor;
+            return this;
+        }
 
         public string GetMessageTemplate() => _messageTemplate;
 

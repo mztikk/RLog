@@ -8,7 +8,7 @@ namespace RLog
 
         private static LogContextProvider? s_instance;
 
-        public static LogContextProvider Instance => s_instance ?? (s_instance = new LogContextProvider());
+        public static LogContextProvider Instance => s_instance ??= new LogContextProvider();
 
         private ConcurrentDictionary<string, LogContext> LogContexts { get; } = new ConcurrentDictionary<string, LogContext>();
 

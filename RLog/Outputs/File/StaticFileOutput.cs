@@ -18,6 +18,13 @@ namespace RLog.Outputs.File
             _logPath = logPath;
             _minLevel = minLevel;
 
+            string path = globalContext.Format(logPath);
+            var fi = new FileInfo(path);
+            if (!fi.Directory.Exists)
+            {
+                fi.Directory.Create();
+            }
+
             _fileStream = new FileStream(globalContext.Format(logPath), FileMode.Append, FileAccess.Write, FileShare.Read);
             _writer = new StreamWriter(_fileStream)
             {

@@ -38,6 +38,11 @@ namespace RLog.Outputs.File
             }
 
             path = _globalContext.Format(path);
+            var fi = new FileInfo(path);
+            if (!fi.Directory.Exists)
+            {
+                fi.Directory.Create();
+            }
 
             if (_file != path || _writer is null)
             {

@@ -14,6 +14,7 @@ namespace RLog
             Context = context;
 
             _parameterizer = new StringParameterizer();
+            _parameterizer["LogContext"] = () => Context;
 
             AddTimestampParameter();
         }

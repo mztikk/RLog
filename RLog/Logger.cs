@@ -29,15 +29,25 @@ namespace RLog
         }
 
         private readonly List<object> _scopeStates = new List<object>();
+        private readonly object _stateLock = new object();
 
         public IDisposable BeginScope<TState>(TState state)
         {
             Action action;
             if (state is { })
             {
-                _scopeStates.Add(state);
+                lock (_stateLock)
+                {
+                    _scopeStates.Add(state);
+                }
 
-                action = () => _scopeStates.Remove(state);
+                action = () =>
+                {
+                    lock (_stateLock)
+                    {
+                        _scopeStates.Remove(state);
+                    }
+                };
             }
             else
             {
@@ -52,15 +62,18 @@ namespace RLog
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (object scope in _scopeStates)
+            lock (_stateLock)
             {
-                if (scope.GetType() == typeof(TState))
+                foreach (object scope in _scopeStates)
                 {
-                    sb.Append(formatter((TState)scope, exception));
-                }
-                else
-                {
-                    sb.Append(scope.ToString());
+                    if (scope.GetType() == typeof(TState))
+                    {
+                        sb.Append(formatter((TState)scope, exception));
+                    }
+                    else
+                    {
+                        sb.Append(scope.ToString());
+                    }
                 }
             }
             sb.Append(formatter(state, exception));
